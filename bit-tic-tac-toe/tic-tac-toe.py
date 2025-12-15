@@ -1,5 +1,6 @@
 from Bit import *
 from framebuf import FrameBuffer, RGB565
+import time
 
 begin()
 
@@ -13,32 +14,57 @@ transparency = 0
 # 1 = X
 # 2 = O
 board = [
-    [1, 2, 1],
-    [2, 2, 2],
-    [1, 2, 1],
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0],
 ]
 
+# Record cursor position
+# Start cursor at center
+cursor_x = 1
+cursor_y = 1
 
-# Draw Grid
-display.fill(0)
-display.rect(40, 0, 4, 128, Display.Color.White, True) # X Y Width Height
-display.rect(84, 0, 4, 128, Display.Color.White, True) # X Y Width Height
-display.rect(0, 40, 128, 4, Display.Color.White, True) # X Y Width Height
-display.rect(0, 84, 128, 4, Display.Color.White, True) # X Y Width Height
-
-
-# Draw Board
-for y in range(3):
-    for x in range(3):
-        x_pos = (x*44) if x > 0 else 0
-        y_pos = (y*44) if y > 0 else 0
-
-        if board[y][x] == 1:
-            display.blit(X, x_pos, y_pos, transparency)
-        
-
-        elif board[y][x] == 2:
-            display.blit(O, x_pos, y_pos, transparency)
+# Set inital cursor drawn value
+cursor_timer = 0
 
 
-display.commit()
+# Draw the Tic Tac Toe gridlines
+def draw_grid():
+    display.fill(0)
+    display.rect(40, 0, 4, 128, Display.Color.White, True) # X Y Width Height
+    display.rect(84, 0, 4, 128, Display.Color.White, True) # X Y Width Height
+    display.rect(0, 40, 128, 4, Display.Color.White, True) # X Y Width Height
+    display.rect(0, 84, 128, 4, Display.Color.White, True) # X Y Width Height
+
+
+# Draw the X's and O's
+def draw_board():
+    for y in range(3):
+        for x in range(3):
+            x_pos = (x*44) if x > 0 else 0
+            y_pos = (y*44) if y > 0 else 0
+
+            if board[y][x] == 1:
+                display.blit(X, x_pos, y_pos, transparency)
+            
+
+            elif board[y][x] == 2:
+                display.blit(O, x_pos, y_pos, transparency)
+
+
+# Draw cursor on the screen
+def draw_cursor():
+    global cursor_timer, cursor_x, cursor_y
+
+    if cursor_timer < 5:
+        display.ellipse(cursor_x * 44 + 20,  cursor_y * 44 + 20, 5, 5, Display.Color.Gray, True)
+
+    cursor_timer = (cursor_timer + 1) % 10
+
+
+while True:
+    draw_grid()
+    draw_board()
+    draw_cursor()
+    display.commit()
+    time.sleep_ms(50)
