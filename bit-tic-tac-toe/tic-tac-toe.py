@@ -57,12 +57,27 @@ def draw_cursor():
     global cursor_timer, cursor_x, cursor_y
 
     if cursor_timer < 5:
-        display.ellipse(cursor_x * 44 + 20,  cursor_y * 44 + 20, 5, 5, Display.Color.Gray, True)
+    	display.ellipse(cursor_x * 44 + 20,  cursor_y * 44 + 20, 5, 5, Display.Color.Gray, True)
 
     cursor_timer = (cursor_timer + 1) % 10
 
+# Create a function to move the cursor
+def move_cursor(x:int, y:int) -> None:
+    global cursor_x, cursor_y
+    print(x, y)
+    cursor_x = (cursor_x + x) % 3
+    cursor_y = (cursor_y + y) % 3
+
+
+# Set Button handler functions
+buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
+buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
+buttons.on_press(Buttons.Left,  lambda: move_cursor(-1,  0))
+buttons.on_press(Buttons.Right, lambda: move_cursor( 1,  0))
+
 
 while True:
+    buttons.scan()
     draw_grid()
     draw_board()
     draw_cursor()
