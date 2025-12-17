@@ -57,7 +57,7 @@ def draw_cursor():
     global cursor_timer, cursor_x, cursor_y
 
     if cursor_timer < 5:
-    	display.ellipse(cursor_x * 44 + 20,  cursor_y * 44 + 20, 5, 5, Display.Color.Gray, True)
+        display.ellipse(cursor_x * 44 + 20,  cursor_y * 44 + 20, 5, 5, Display.Color.Gray, True)
 
     cursor_timer = (cursor_timer + 1) % 10
 
@@ -69,11 +69,20 @@ def move_cursor(x:int, y:int) -> None:
     cursor_y = (cursor_y + y) % 3
 
 
+# Function to update board based on user button press
+def update_board(value: int) -> None:
+    global cursor_x, cursor_y
+
+    board[cursor_y][cursor_x] = value
+
+
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
 buttons.on_press(Buttons.Left,  lambda: move_cursor(-1,  0))
 buttons.on_press(Buttons.Right, lambda: move_cursor( 1,  0))
+buttons.on_press(Buttons.A, lambda: update_board(1))
+buttons.on_press(Buttons.B, lambda: update_board(2))
 
 
 while True:
