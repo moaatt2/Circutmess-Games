@@ -27,6 +27,9 @@ cursor_y = 1
 # Set inital cursor drawn value
 cursor_timer = 0
 
+# Set State
+state = "player_turn"
+
 
 # Draw the Tic Tac Toe gridlines
 def draw_grid():
@@ -71,9 +74,11 @@ def move_cursor(x:int, y:int) -> None:
 
 # Function to update board based on user button press
 def update_board(value: int) -> None:
-    global cursor_x, cursor_y
+    global cursor_x, cursor_y, state
 
-    board[cursor_y][cursor_x] = value
+    if board[cursor_y][cursor_x] == 0:
+        board[cursor_y][cursor_x] = value
+        state = "computer_turn"
 
 
 # Set Button handler functions
@@ -82,13 +87,18 @@ buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
 buttons.on_press(Buttons.Left,  lambda: move_cursor(-1,  0))
 buttons.on_press(Buttons.Right, lambda: move_cursor( 1,  0))
 buttons.on_press(Buttons.A, lambda: update_board(1))
-buttons.on_press(Buttons.B, lambda: update_board(2))
 
 
 while True:
-    buttons.scan()
-    draw_grid()
-    draw_board()
-    draw_cursor()
-    display.commit()
+    if state == "player_turn":
+        buttons.scan()
+        draw_grid()
+        draw_board()
+        draw_cursor()
+        display.commit()
+    elif state == "computer_turn":
+        draw_grid()
+        draw_board()
+        display.commit()
+
     time.sleep_ms(50)
