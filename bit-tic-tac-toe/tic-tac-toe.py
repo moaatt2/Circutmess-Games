@@ -81,6 +81,16 @@ def update_board(value: int) -> None:
         state = "computer_turn"
 
 
+# Function for handling computer move logic - TODO: Make logic better
+def computer_turn() -> None:
+    global state
+    for y in range(3):
+        for x in range(3):
+            if board[y][x] == 0:
+                board[y][x] = 2
+                state = "player_turn"
+                return
+
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
@@ -97,6 +107,7 @@ while True:
         draw_cursor()
         display.commit()
     elif state == "computer_turn":
+        computer_turn()
         draw_grid()
         draw_board()
         display.commit()
