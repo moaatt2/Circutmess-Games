@@ -19,16 +19,12 @@ board = [
     [0, 0, 0],
 ]
 
-# Record cursor position
-# Start cursor at center
-cursor_x = 1
-cursor_y = 1
-
-# Set inital cursor drawn value
-cursor_timer = 0
-
-# Set State
-state = "player_turn"
+# 
+cursor_x = 1          # Cursor X position - start at center
+cursor_y = 1          # Cursor Y position - start at center
+cursor_timer = 0      # Cursor state for animation timing
+state = "player_turn" # Game State
+winner = None         # Store who the winner is
 
 
 # Draw the Tic Tac Toe gridlines
@@ -91,6 +87,34 @@ def computer_turn() -> None:
                 state = "player_turn"
                 return
 
+
+# Function for detetcing a winner
+def has_winner() -> None:
+    global board, state, winner
+
+    # Check Rows
+    for y in range(3):
+        if board[y][0] != 0 and board[y][0] == board[y][1] == board[y][2]:
+            state = "winner"
+            winner = board[y][0]
+
+    # Check Columns
+    for x in range(3):
+        if board[0][x] != 0 and board[0][x] == board[1][x] == board[2][x]:
+            state = "winner"
+            winner = board[0][x]
+
+    # Check \ Diagonal
+    if board[1][1] != 0 and board[0][0] == board[1][1] == board[2][2]:
+        state = "winner"
+        winner = board[1][1]
+
+    # Check / Diagonal
+    elif board[1][1] != 0 and board[0][2] == board[1][1] == board[2][0]:
+        state = "winner"
+        winner = board[1][1]
+
+
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
@@ -106,10 +130,16 @@ while True:
         draw_board()
         draw_cursor()
         display.commit()
+        has_winner()
     elif state == "computer_turn":
         computer_turn()
         draw_grid()
         draw_board()
+        display.commit()
+        has_winner()
+    elif state == "winner":
+        display.fill(0)
+        display.text(f"{winner} Won yeay", 0, 54, Display.Color.White)
         display.commit()
 
     time.sleep_ms(50)
