@@ -115,6 +115,30 @@ def has_winner() -> None:
         winner = board[1][1]
 
 
+# Draw Function for winner page
+def draw_winner() -> None:
+
+    # Clear screen
+    display.fill(0)
+
+    # Draw winning sprite
+    if winner == 1:
+        display.blit(X, 44, 5, transparency)
+    elif winner == 2:
+        display.blit(O, 44, 5, transparency)
+
+    display.text("Won", 52, 50, Display.Color.White)
+
+    display.text("Play Again?", 20, 70, Display.Color.White)
+
+    display.text("Yes", 52, 95, Display.Color.White)
+
+    display.text("No",  56, 110, Display.Color.White)
+
+
+    display.commit()
+
+
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
@@ -138,8 +162,6 @@ while True:
         display.commit()
         has_winner()
     elif state == "winner":
-        display.fill(0)
-        display.text(f"{winner} Won yeay", 0, 54, Display.Color.White)
-        display.commit()
+        draw_winner()
 
     time.sleep_ms(50)
