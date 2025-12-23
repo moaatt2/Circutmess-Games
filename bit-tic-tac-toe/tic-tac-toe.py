@@ -19,7 +19,7 @@ board = [
     [0, 0, 0],
 ]
 
-# 
+# Set variables
 cursor_x = 1          # Cursor X position - start at center
 cursor_y = 1          # Cursor Y position - start at center
 cursor_timer = 0      # Cursor state for animation timing
@@ -60,12 +60,22 @@ def draw_cursor():
 
     cursor_timer = (cursor_timer + 1) % 10
 
+
 # Create a function to move the cursor
 def move_cursor(x:int, y:int) -> None:
-    global cursor_x, cursor_y
-    print(x, y)
-    cursor_x = (cursor_x + x) % 3
-    cursor_y = (cursor_y + y) % 3
+    global cursor_x, cursor_y, state
+
+    # Handle game screen
+    if state == "player_turn":
+        cursor_x = (cursor_x + x) % 3
+        cursor_y = (cursor_y + y) % 3
+
+    # Handle winner screen
+    elif state == "winner":
+        cursor_y = (cursor_y + y) % 2
+
+    # # Verify cursor position
+    # print(cursor_x, cursor_y)
 
 
 # Function to update board based on user button press
@@ -90,33 +100,38 @@ def computer_turn() -> None:
 
 # Function for detetcing a winner
 def has_winner() -> None:
-    global board, state, winner
+    global board, state, winner, cursor_x, cursor_y
 
     # Check Rows
     for y in range(3):
         if board[y][0] != 0 and board[y][0] == board[y][1] == board[y][2]:
             state = "winner"
+            cursor_x, cursor_y = 0, 0
             winner = board[y][0]
 
     # Check Columns
     for x in range(3):
         if board[0][x] != 0 and board[0][x] == board[1][x] == board[2][x]:
             state = "winner"
+            cursor_x, cursor_y = 0, 0
             winner = board[0][x]
 
     # Check \ Diagonal
     if board[1][1] != 0 and board[0][0] == board[1][1] == board[2][2]:
         state = "winner"
+        cursor_x, cursor_y = 0, 0
         winner = board[1][1]
 
     # Check / Diagonal
     elif board[1][1] != 0 and board[0][2] == board[1][1] == board[2][0]:
         state = "winner"
+        cursor_x, cursor_y = 0, 0
         winner = board[1][1]
 
 
 # Draw Function for winner page
 def draw_winner() -> None:
+    global winner, cursor_timer, cursor_y
 
     # Clear screen
     display.fill(0)
@@ -127,24 +142,45 @@ def draw_winner() -> None:
     elif winner == 2:
         display.blit(O, 44, 5, transparency)
 
+    # Write fixed text
     display.text("Won", 52, 50, Display.Color.White)
-
     display.text("Play Again?", 20, 70, Display.Color.White)
 
-    display.text("Yes", 52, 95, Display.Color.White)
+    # Draw cursor on yes
+    if cursor_timer < 5 and cursor_y == 0:
 
-    display.text("No",  56, 110, Display.Color.White)
+        display.rect(50, 93, 28, 11, Display.Color.Gray, True) # X Y Width Height
+
+        display.text("Yes", 52, 95, Display.Color.Black)
+        display.text("No",  56, 110, Display.Color.White)
+
+    # Draw cursor on No
+    elif cursor_timer < 5 and cursor_y == 1:
+
+        display.rect(54, 108, 20, 11, Display.Color.Gray, True) # X Y Width Height
+
+        display.text("Yes", 52, 95, Display.Color.White)
+        display.text("No",  56, 110, Display.Color.Black)
+
+    # Don't draw cursor
+    else:
+        display.text("Yes", 52, 95, Display.Color.White)
+        display.text("No",  56, 110, Display.Color.White)
+
+    # Increment cursor timer
+    cursor_timer = (cursor_timer + 1) % 10
 
 
-    display.commit()
-
+# Letters are 8X8 sprites
+# Centering formula:
+    # x = (128 - (len(string)*8))
 
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
 buttons.on_press(Buttons.Left,  lambda: move_cursor(-1,  0))
 buttons.on_press(Buttons.Right, lambda: move_cursor( 1,  0))
-buttons.on_press(Buttons.A, lambda: update_board(1))
+buttons.on_press(Buttons.A,     lambda: update_board(1))
 
 
 while True:
@@ -162,6 +198,8 @@ while True:
         display.commit()
         has_winner()
     elif state == "winner":
+        buttons.scan()
         draw_winner()
+        display.commit()
 
     time.sleep_ms(50)
