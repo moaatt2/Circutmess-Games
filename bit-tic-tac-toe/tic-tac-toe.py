@@ -78,13 +78,36 @@ def move_cursor(x:int, y:int) -> None:
     # print(cursor_x, cursor_y)
 
 
-# Function to update board based on user button press
-def update_board(value: int) -> None:
-    global cursor_x, cursor_y, state
+# Take an action when a button is pressed
+def take_action(value: int) -> None:
+    global board, cursor_x, cursor_y, state
 
-    if board[cursor_y][cursor_x] == 0:
-        board[cursor_y][cursor_x] = value
-        state = "computer_turn"
+    # Update board on player turn
+    if state == "player_turn":
+        if board[cursor_y][cursor_x] == 0:
+            board[cursor_y][cursor_x] = value
+            state = "computer_turn"
+
+    # Take winner menu action
+    elif state == "winner" and value == 1:
+
+        # Handle User Selecting yes
+        if cursor_y == 0:
+
+            # Reset board to blank
+            board = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+            ]
+            
+            cursor_x, cursor_y = 1, 1 # Reset cursor to center
+            state = "player_turn"     # Reset game state
+
+        # Handle User Selecting no
+        elif cursor_y == 1:
+            pass
+            # TODO: Bring user to menu screen when menu screen is implemented
 
 
 # Function for handling computer move logic - TODO: Make logic better
@@ -171,16 +194,12 @@ def draw_winner() -> None:
     cursor_timer = (cursor_timer + 1) % 10
 
 
-# Letters are 8X8 sprites
-# Centering formula:
-    # x = (128 - (len(string)*8))
-
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
 buttons.on_press(Buttons.Left,  lambda: move_cursor(-1,  0))
 buttons.on_press(Buttons.Right, lambda: move_cursor( 1,  0))
-buttons.on_press(Buttons.A,     lambda: update_board(1))
+buttons.on_press(Buttons.A,     lambda: take_action(1))
 
 
 while True:
