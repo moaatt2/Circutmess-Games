@@ -23,6 +23,7 @@ board = [
 cursor_x = 1          # Cursor X position - start at center
 cursor_y = 1          # Cursor Y position - start at center
 cursor_timer = 0      # Cursor state for animation timing
+music_timer = 0       # Timing for music
 state = "player_turn" # Game State
 winner = None         # Store who the winner is
 
@@ -100,7 +101,7 @@ def take_action(value: int) -> None:
                 [0, 0, 0],
                 [0, 0, 0],
             ]
-            
+
             cursor_x, cursor_y = 1, 1 # Reset cursor to center
             state = "player_turn"     # Reset game state
 
@@ -194,6 +195,15 @@ def draw_winner() -> None:
     cursor_timer = (cursor_timer + 1) % 10
 
 
+def music() -> None:
+    global music_timer
+    piezo.tone(1000*(music_timer + 1), 50)
+    music_timer = (music_timer + 1) % 10
+
+# Letters are 8X8 sprites
+# Centering formula:
+    # x = (128 - (len(string)*8))
+
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
@@ -221,4 +231,4 @@ while True:
         draw_winner()
         display.commit()
 
-    time.sleep_ms(50)
+    music()
