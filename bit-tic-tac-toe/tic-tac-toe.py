@@ -1,6 +1,8 @@
+import math
+import time
+import machine
 from Bit import *
 from framebuf import FrameBuffer, RGB565
-import time
 
 begin()
 
@@ -195,10 +197,12 @@ def draw_winner() -> None:
     cursor_timer = (cursor_timer + 1) % 10
 
 
+# Music function
 def music() -> None:
     global music_timer
-    piezo.tone(1000*(music_timer + 1), 50)
-    music_timer = (music_timer + 1) % 10
+    freq = 1000 * (music_timer + 1)
+    pwm.freq(freq)
+    music_timer = (music_timer + 1) % 5
 
 # Letters are 8X8 sprites
 # Centering formula:
@@ -211,6 +215,10 @@ buttons.on_press(Buttons.Left,  lambda: move_cursor(-1,  0))
 buttons.on_press(Buttons.Right, lambda: move_cursor( 1,  0))
 buttons.on_press(Buttons.A,     lambda: take_action(1))
 
+
+# Set up piezo buzzer
+pwm = machine.PWM(piezo.__pin) # find pin from piezo class
+pwm.duty_u16(16384)            # Volume control goes from 0 -> 65535
 
 while True:
     if state == "player_turn":
@@ -232,3 +240,4 @@ while True:
         display.commit()
 
     music()
+    time.sleep_ms(50)
