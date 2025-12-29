@@ -21,6 +21,17 @@ board = [
     [0, 0, 0],
 ]
 
+# BG Music
+background = [
+    294,
+    294,
+    587,
+    220,
+    208,
+    196,
+    175,
+]
+
 # Set variables
 cursor_x = 1          # Cursor X position - start at center
 cursor_y = 1          # Cursor Y position - start at center
@@ -200,9 +211,10 @@ def draw_winner() -> None:
 # Music function
 def music() -> None:
     global music_timer
-    freq = 1000 * (music_timer + 1)
+    freq = background[music_timer]
     pwm.freq(freq)
-    music_timer = (music_timer + 1) % 5
+    music_timer = (music_timer + 1) % len(background)
+
 
 # Letters are 8X8 sprites
 # Centering formula:
@@ -218,7 +230,7 @@ buttons.on_press(Buttons.A,     lambda: take_action(1))
 
 # Set up piezo buzzer
 pwm = machine.PWM(piezo.__pin) # find pin from piezo class
-pwm.duty_u16(16384)            # Volume control goes from 0 -> 65535
+pwm.duty_u16(16384)            # Volume control: valid values [0, 65535], default to 25%
 
 while True:
     if state == "player_turn":
