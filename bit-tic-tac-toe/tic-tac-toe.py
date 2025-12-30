@@ -216,10 +216,6 @@ def music() -> None:
     music_timer = (music_timer + 1) % len(background)
 
 
-# Letters are 8X8 sprites
-# Centering formula:
-    # x = (128 - (len(string)*8))
-
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
 buttons.on_press(Buttons.Down,  lambda: move_cursor( 0,  1))
