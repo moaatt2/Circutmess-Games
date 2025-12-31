@@ -1,4 +1,3 @@
-import math
 import time
 import machine
 from Bit import *
@@ -21,24 +20,54 @@ board = [
     [0, 0, 0],
 ]
 
-# BG Music
-background = [
-    294,
-    294,
-    587,
-    220,
-    208,
-    196,
-    175,
+
+# Condensed Background music | Format is [frequency, frames]
+bg_c = [
+    [294, 8],
+    [587, 4],
+    [220, 4],
+    [208, 4],
+    [196, 4],
+    [175, 4],
 ]
 
+move_sound_c = [
+    [300, 4],
+]
+
+place_sound_c = [
+    [330, 4],
+]
+
+
+# Function to decompress sound
+def expand_sound(compressed_sound: list) -> list:
+    # Instantiate output variable
+    out = list()
+
+    # Uncompress provided list
+    for frequency, duration in compressed_sound:
+        for _ in range(duration):
+            out.append(frequency)
+    
+    # Return uncompressed list
+    return out
+
+
+# Decompress sounds
+background  = expand_sound(bg_c)
+move_sound  = expand_sound(move_sound_c)
+place_sound = expand_sound(place_sound_c)
+
 # Set variables
-cursor_x = 1          # Cursor X position - start at center
-cursor_y = 1          # Cursor Y position - start at center
-cursor_timer = 0      # Cursor state for animation timing
-music_timer = 0       # Timing for music
-state = "player_turn" # Game State
-winner = None         # Store who the winner is
+cursor_x = 1               # Cursor X position - start at center
+cursor_y = 1               # Cursor Y position - start at center
+cursor_timer = 0           # Cursor state for animation timing
+music_timer = 0            # Timing for music
+effect_timer = 0           # Timing for sound effects
+effect_playing = None      # Sound effect currently playing
+state = "player_turn"      # Game State
+winner = None              # Store who the winner is
 
 
 # Draw the Tic Tac Toe gridlines
@@ -77,7 +106,7 @@ def draw_cursor():
 
 # Create a function to move the cursor
 def move_cursor(x:int, y:int) -> None:
-    global cursor_x, cursor_y, state
+    global cursor_x, cursor_y, state, effect_playing, effect_timer
 
     # Handle game screen
     if state == "player_turn":
@@ -87,6 +116,10 @@ def move_cursor(x:int, y:int) -> None:
     # Handle winner screen
     elif state == "winner":
         cursor_y = (cursor_y + y) % 2
+    
+    # Set sound effect
+    effect_playing = move_sound
+    effect_timer = 0
 
     # # Verify cursor position
     # print(cursor_x, cursor_y)
@@ -94,7 +127,7 @@ def move_cursor(x:int, y:int) -> None:
 
 # Take an action when a button is pressed
 def take_action(value: int) -> None:
-    global board, cursor_x, cursor_y, state
+    global board, cursor_x, cursor_y, state, effect_playing, effect_timer
 
     # Update board on player turn
     if state == "player_turn":
@@ -102,8 +135,16 @@ def take_action(value: int) -> None:
             board[cursor_y][cursor_x] = value
             state = "computer_turn"
 
+        # Set sound effect
+        effect_playing = place_sound
+        effect_timer = 0
+
     # Take winner menu action
     elif state == "winner" and value == 1:
+
+        # Set sound effect
+        effect_playing = place_sound
+        effect_timer = 0
 
         # Handle User Selecting yes
         if cursor_y == 0:
@@ -210,11 +251,24 @@ def draw_winner() -> None:
 
 # Music function
 def music() -> None:
-    global music_timer
-    freq = background[music_timer]
-    pwm.freq(freq)
-    music_timer = (music_timer + 1) % len(background)
+    global music_timer, effect_timer, effect_playing
 
+    # Play background music when no effect is running
+    if effect_playing is None:
+        freq = background[music_timer]
+        pwm.freq(freq)
+    
+    # Otherwise play sound effect
+    else:
+        freq = effect_playing[effect_timer]
+        pwm.freq(freq)
+        effect_timer += 1
+
+        # Clear effect playing after effect is done
+        if not effect_timer < len(effect_playing):
+            effect_playing = None
+
+    music_timer = (music_timer + 1) % len(background)
 
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
@@ -224,9 +278,10 @@ buttons.on_press(Buttons.Right, lambda: move_cursor( 1,  0))
 buttons.on_press(Buttons.A,     lambda: take_action(1))
 
 
-# Set up piezo buzzer
+# Set piezo buzzer
 pwm = machine.PWM(piezo.__pin) # find pin from piezo class
 pwm.duty_u16(16384)            # Volume control: valid values [0, 65535], default to 25%
+
 
 while True:
     if state == "player_turn":
