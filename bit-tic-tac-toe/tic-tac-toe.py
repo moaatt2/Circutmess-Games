@@ -68,6 +68,7 @@ effect_timer = 0           # Timing for sound effects
 effect_playing = None      # Sound effect currently playing
 state = "player_turn"      # Game State
 winner = None              # Store who the winner is
+volume = 16384             # Default Volume value of 25%
 
 
 # Draw the Tic Tac Toe gridlines
@@ -256,7 +257,11 @@ def music() -> None:
     # Play background music when no effect is running
     if effect_playing is None:
         freq = background[music_timer]
-        pwm.freq(freq)
+        if freq == 0:
+            pwm.duty_u16(0)
+        else:
+            pwm.duty_u16(volume)
+            pwm.freq(freq)
     
     # Otherwise play sound effect
     else:
@@ -269,6 +274,7 @@ def music() -> None:
             effect_playing = None
 
     music_timer = (music_timer + 1) % len(background)
+
 
 # Set Button handler functions
 buttons.on_press(Buttons.Up,    lambda: move_cursor( 0, -1))
