@@ -64,6 +64,7 @@ cursor_x = 1               # Cursor X position - start at center
 cursor_y = 1               # Cursor Y position - start at center
 cursor_timer = 0           # Cursor state for animation timing
 music_timer = 0            # Timing for music
+music_playing = background # Music currently playing
 effect_timer = 0           # Timing for sound effects
 effect_playing = None      # Sound effect currently playing
 state = "player_turn"      # Game State
@@ -256,7 +257,7 @@ def music() -> None:
 
     # Play background music when no effect is running
     if effect_playing is None:
-        freq = background[music_timer]
+        freq = music_playing[music_timer]
         if freq == 0:
             pwm.duty_u16(0)
         else:
@@ -273,7 +274,7 @@ def music() -> None:
         if not effect_timer < len(effect_playing):
             effect_playing = None
 
-    music_timer = (music_timer + 1) % len(background)
+    music_timer = (music_timer + 1) % len(music_playing)
 
 
 # Set Button handler functions
