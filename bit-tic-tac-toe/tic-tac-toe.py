@@ -31,10 +31,44 @@ bg_c = [
     [175, 4],
 ]
 
+# Background music for win screen
+win_music_c = [
+    [523, 2],
+    [523, 2],
+    [523, 2],
+    [523, 4],
+    [659, 2],
+    [698, 2],
+    [784, 4],
+    [0,   2],
+    [784, 2],
+    [880, 2],
+    [988, 4],
+    [784, 2],
+    [659, 2],
+    [523, 6],
+    [0,   4],
+    [784, 2],
+    [988, 2],
+    [1047, 6],
+    [0,   6],
+]
+
+# Background music for loosing screen
+loose_music_c = [
+    [392, 3],
+    [370, 3],
+    [349, 4],
+    [330, 6],
+    [0,   4],
+]
+
+# Sound effect for moving cursor
 move_sound_c = [
     [300, 4],
 ]
 
+# Sound effect for making a choice
 place_sound_c = [
     [330, 4],
 ]
@@ -56,6 +90,8 @@ def expand_sound(compressed_sound: list) -> list:
 
 # Decompress sounds
 background  = expand_sound(bg_c)
+win_music   = expand_sound(win_music_c)
+loose_music = expand_sound(loose_music_c)
 move_sound  = expand_sound(move_sound_c)
 place_sound = expand_sound(place_sound_c)
 
@@ -180,7 +216,7 @@ def computer_turn() -> None:
 
 # Function for detetcing a winner
 def has_winner() -> None:
-    global board, state, winner, cursor_x, cursor_y
+    global board, state, winner, cursor_x, cursor_y, music_playing
 
     # Check Rows
     for y in range(3):
@@ -207,6 +243,14 @@ def has_winner() -> None:
         state = "winner"
         cursor_x, cursor_y = 0, 0
         winner = board[1][1]
+    
+    # Set Winner Screen background music
+    if state == "winner":
+        music_timer = 0
+        if winner == 1:
+            music_playing = win_music
+        else:
+            music_playing = loose_music
 
 
 # Draw Function for winner page
@@ -287,7 +331,7 @@ buttons.on_press(Buttons.A,     lambda: take_action(1))
 
 # Set piezo buzzer
 pwm = machine.PWM(piezo.__pin) # find pin from piezo class
-pwm.duty_u16(16384)            # Volume control: valid values [0, 65535], default to 25%
+pwm.duty_u16(volume)            # Volume control: valid values [0, 65535], default to 25%
 
 
 while True:
