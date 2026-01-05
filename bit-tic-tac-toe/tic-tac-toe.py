@@ -165,7 +165,7 @@ def move_cursor(x:int, y:int) -> None:
 
 # Take an action when a button is pressed
 def take_action(value: int) -> None:
-    global board, cursor_x, cursor_y, state, effect_playing, effect_timer
+    global board, cursor_x, cursor_y, state, effect_playing, effect_timer, music_playing, music_timer
 
     # Update board on player turn
     if state == "player_turn":
@@ -194,8 +194,11 @@ def take_action(value: int) -> None:
                 [0, 0, 0],
             ]
 
-            cursor_x, cursor_y = 1, 1 # Reset cursor to center
-            state = "player_turn"     # Reset game state
+            cursor_x, cursor_y = 1, 1  # Reset cursor to center
+            state = "player_turn"      # Reset game state
+            music_playing = background # Reset background music
+            music_timer = 0            # Reset music timer
+
 
         # Handle User Selecting no
         elif cursor_y == 1:
