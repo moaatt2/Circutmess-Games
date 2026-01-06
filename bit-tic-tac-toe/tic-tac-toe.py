@@ -298,6 +298,20 @@ def draw_winner() -> None:
     cursor_timer = (cursor_timer + 1) % 10
 
 
+# Function to draw the main menu
+def draw_menu() -> None:
+
+    # Clear screen
+    display.fill(0)
+
+    # Game Name
+    display.text("Tic Tac Toe", 20, 0, Display.Color.White)
+
+    # Options
+    display.text("Single Player", 12, 95, Display.Color.White)
+    display.text("Multiplayer",   20, 110, Display.Color.White)
+
+
 # Music function
 def music() -> None:
     global music_timer, effect_timer, effect_playing
@@ -338,6 +352,9 @@ pwm.duty_u16(volume)            # Volume control: valid values [0, 65535], defau
 
 
 while True:
+    if state == "menu":
+        draw_menu()
+        display.commit()
     if state == "player_turn":
         buttons.scan()
         draw_grid()
