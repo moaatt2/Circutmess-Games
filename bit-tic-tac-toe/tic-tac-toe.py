@@ -154,6 +154,10 @@ def move_cursor(x:int, y:int) -> None:
     # Handle winner screen
     elif state == "winner":
         cursor_y = (cursor_y + y) % 2
+
+    # Handle Menu screen
+    elif state == "menu":
+        cursor_y = (cursor_y + y) % 2
     
     # Set sound effect
     effect_playing = move_sound
@@ -300,16 +304,37 @@ def draw_winner() -> None:
 
 # Function to draw the main menu
 def draw_menu() -> None:
+    global cursor_timer
 
     # Clear screen
     display.fill(0)
 
     # Game Name
-    display.text("Tic Tac Toe", 20, 0, Display.Color.White)
+    display.text("Tic-Tac-Toe", 20, 10, Display.Color.White)
 
-    # Options
-    display.text("Single Player", 12, 95, Display.Color.White)
-    display.text("Multiplayer",   20, 110, Display.Color.White)
+    # Draw Cursor on Single Player
+    if cursor_timer < 5 and cursor_y == 0:
+
+        display.rect(10, 78, 108, 11, Display.Color.Gray, True) # X Y Width Height
+
+        display.text("Single Player", 12, 80,  Display.Color.Black)
+        display.text("Multiplayer",   20, 100, Display.Color.Gray)
+
+    # Draw cursor on Multiplayer
+    elif cursor_timer < 5 and cursor_y == 1:
+
+        display.rect(18, 98, 92, 11, Display.Color.Gray, True) # X Y Width Height
+
+        display.text("Single Player", 12, 80,  Display.Color.White)
+        display.text("Multiplayer",   20, 100, Display.Color.White)
+
+    # Don't draw cursor
+    else:
+        display.text("Single Player", 12, 80,  Display.Color.White)
+        display.text("Multiplayer",   20, 100, Display.Color.Gray)
+
+    # Increment cursor timer
+    cursor_timer = (cursor_timer + 1) % 10
 
 
 # Music function
@@ -353,6 +378,7 @@ pwm.duty_u16(volume)            # Volume control: valid values [0, 65535], defau
 
 while True:
     if state == "menu":
+        buttons.scan()
         draw_menu()
         display.commit()
     if state == "player_turn":
