@@ -203,11 +203,35 @@ def take_action(value: int) -> None:
             music_playing = background # Reset background music
             music_timer = 0            # Reset music timer
 
-
         # Handle User Selecting no
         elif cursor_y == 1:
             pass
             # TODO: Bring user to menu screen when menu screen is implemented
+    
+    elif state == "menu" and value == 1:
+
+        # Set sound effect
+        effect_playing = place_sound
+        effect_timer = 0
+
+        # Handle user selecting singple player
+        if cursor_y == 0:
+
+            # Reset board to blank
+            board = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+            ]
+
+            cursor_x, cursor_y = 1, 1  # Reset cursor to center
+            state = "player_turn"      # Reset game state
+            music_playing = background # Reset background music
+            music_timer = 0            # Reset music timer
+
+        # Handle user selecting multiplayer
+        elif cursor_y == 1:
+            pass # TODO: Start multiplayer mode once implemented
 
 
 # Function for handling computer move logic - TODO: Make logic better
