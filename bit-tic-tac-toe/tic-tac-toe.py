@@ -63,6 +63,14 @@ loose_music_c = [
     [0,   4],
 ]
 
+# Background music for menu
+menu_music_c = [
+    [523, 4],
+    [659, 4],
+    [784, 4],
+    [659, 4],
+]
+
 # Sound effect for moving cursor
 move_sound_c = [
     [300, 4],
@@ -92,6 +100,7 @@ def expand_sound(compressed_sound: list) -> list:
 background  = expand_sound(bg_c)
 win_music   = expand_sound(win_music_c)
 loose_music = expand_sound(loose_music_c)
+menu_music  = expand_sound(menu_music_c)
 move_sound  = expand_sound(move_sound_c)
 place_sound = expand_sound(place_sound_c)
 
@@ -100,10 +109,10 @@ cursor_x = 1               # Cursor X position - start at center
 cursor_y = 1               # Cursor Y position - start at center
 cursor_timer = 0           # Cursor state for animation timing
 music_timer = 0            # Timing for music
-music_playing = background # Music currently playing
+music_playing = menu_music # Music currently playing
 effect_timer = 0           # Timing for sound effects
 effect_playing = None      # Sound effect currently playing
-state = "player_turn"      # Game State
+state = "menu"             # Game State
 winner = None              # Store who the winner is
 volume = 16384             # Default Volume value of 25%
 
