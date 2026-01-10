@@ -106,7 +106,7 @@ place_sound = expand_sound(place_sound_c)
 
 # Set variables
 cursor_x = 1               # Cursor X position - start at center
-cursor_y = 1               # Cursor Y position - start at center
+cursor_y = 0               # Cursor Y position - start at top of menu
 cursor_timer = 0           # Cursor state for animation timing
 music_timer = 0            # Timing for music
 music_playing = menu_music # Music currently playing
@@ -212,10 +212,13 @@ def take_action(value: int) -> None:
             music_playing = background # Reset background music
             music_timer = 0            # Reset music timer
 
-        # Handle User Selecting no
+        # If user selects no return to main menu
         elif cursor_y == 1:
-            pass
-            # TODO: Bring user to menu screen when menu screen is implemented
+
+            cursor_x, cursor_y = 1, 0  # Reset cursor to center
+            state = "menu"             # Reset game state
+            music_playing = menu_music # Reset background music
+            music_timer = 0            # Reset music timer
     
     elif state == "menu" and value == 1:
 
